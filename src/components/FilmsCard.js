@@ -4,18 +4,18 @@ import Card from './Card';
 class filmsCard extends React.Component {
     state = {
       data: {},
+      category: 'now_playing',
       url: 'https://image.tmdb.org/t/p/w300/',
       currentPage: 1
       
   }
   componentDidMount() {
-    fetch(`https://api.themoviedb.org/3/movie/popular?api_key=05b735a5f79822f887889281f45b295a&language=en-US&page=${this.state.currentPage}`)
+    fetch(`https://api.themoviedb.org/3/movie/${this.state.category}?api_key=05b735a5f79822f887889281f45b295a&language=en-US&page=${this.state.currentPage}`)
     .then((res) => {
       return res.json()
     })
     .then((result) => {
         this.setState({data: result.results})
-        console.log(this.state.data)
       }
     )
   }
@@ -26,9 +26,8 @@ class filmsCard extends React.Component {
     this.setState((state) => {
       return {currentPage: state.currentPage + 1}
     }, () => {
-      fetch(`https://api.themoviedb.org/3/movie/popular?api_key=05b735a5f79822f887889281f45b295a&language=en-US&page=${this.state.currentPage}`)
+      fetch(`https://api.themoviedb.org/3/movie/${this.state.category}?api_key=05b735a5f79822f887889281f45b295a&language=en-US&page=${this.state.currentPage}`)
       .then((res) => {
-        console.log('lourd')
         return res.json()
       })
       .then((result) => {
@@ -36,7 +35,6 @@ class filmsCard extends React.Component {
         }
       )
     })
-    console.log(this.state.currentPage)
   }
   previousPage = () => {
     if (this.state.currentPage <= 1) {
@@ -45,8 +43,7 @@ class filmsCard extends React.Component {
     this.setState((state) => {
       return {currentPage: state.currentPage - 1}
     }, () => {
-      console.log("lourd")
-      fetch(`https://api.themoviedb.org/3/movie/popular?api_key=05b735a5f79822f887889281f45b295a&language=en-US&page=${this.state.currentPage}`)
+      fetch(`https://api.themoviedb.org/3/movie/${this.state.category}?api_key=05b735a5f79822f887889281f45b295a&language=en-US&page=${this.state.currentPage}`)
       .then((res) => {
         return res.json()
       })
@@ -55,7 +52,19 @@ class filmsCard extends React.Component {
         }
       )
     })
-    console.log(this.state.currentPage)
+  }
+  setCategory = (e) => {
+    this.setState({category: e, currentPage: 1}, () => {
+      fetch(`https://api.themoviedb.org/3/movie/${this.state.category}?api_key=05b735a5f79822f887889281f45b295a&language=en-US&page=${this.state.currentPage}`)
+      .then((res) => {
+        return res.json()
+      })
+      .then((result) => {
+          this.setState({data: result.results})
+        }
+      )
+    })
+    console.log(this.state.category)
   }
   render() {
     const datas = this.state.data
@@ -67,6 +76,9 @@ class filmsCard extends React.Component {
           })}
           <div className="pagination">
             <button onClick={() => {this.previousPage()}}>Page précédente</button>
+            <button onClick={() => {this.setCategory('popular')}}>Populaire</button>
+            <button onClick={() => {this.setCategory('now_playing')}}>En salle</button>
+            <button onClick={() => {this.setCategory('top_rated')}}>Les mieux notés</button>
             <button onClick={() => {this.nextPage()}}>Page suivante</button>
           </div>
         </div>
